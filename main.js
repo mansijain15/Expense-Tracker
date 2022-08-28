@@ -4,9 +4,9 @@
     income: 0,
     expense: 0,
     transactions: [
-        {id:uniqueId(),name:'salary',amount:0,type:'income'},
-        {id:uniqueId(),name:'Grocery',amount:0,type:'expense'},
-        {id:uniqueId(),name:'guitar',amount:0,type:'expense'}
+        // {id:uniqueId(),name:'',amount:0,type:'income'},
+        // {id:uniqueId(),name:'',amount:0,type:'expense'},
+        // {id:uniqueId(),name:'',amount:0,type:'expense'}
         // {name:'travel',amount:'3000',type:'expense'}
     ]
  }
@@ -19,10 +19,16 @@ var expenseBtnEl = document .querySelector('#expenseBtn');
 var nameInputEl = document.querySelector('#name');
 var amountInputEl = document.querySelector('#amount');
 
+
  function init() {
+    var localState =  JSON.parse(localStorage.getItem('expensetrackerstate'))
+   if(localState != null)
+        state = localState;
     updateState();
     initListeners();
  }
+
+
  function uniqueId(){
      // random id generator
      return Math.round(Math.random() * 100000);
@@ -52,6 +58,7 @@ var amountInputEl = document.querySelector('#amount');
     else{
         alert('please eneter valid data');
     }
+    // when we add a new transaction its name and value should get cleared out 
     nameInputEl.value = '';
     amountInputEl.value = '';
  }
@@ -83,30 +90,36 @@ var amountInputEl = document.querySelector('#amount');
             expense += item.amount;
         }
   }
-
   balance = income - expense;
   state.balance = balance;
   state.income = income;
   state.expense = expense;
+
+  localStorage.setItem('expensetrackerstate', JSON.stringify(state))
   render();
 }
+
  function render() {
     balanceEl.innerHTML = `Rs.${state.balance}`;
     incomeEl.innerHTML = `Rs.${state.income}`;
     expenseEl.innerHTML = `Rs.${state.expense}`;
 
     var transactionEl,containerEl,amountEl,btnEl;
+    // clearing previous data before adding new one 
     transactionsEl.innerHTML = '';
+
     for(var i = 0;i < state.transactions.length;i++){
-        // li create krke name append kiya hai 
          item = state.transactions[i];
+
+              // li create krke name append kiya hai  
         transactionEl = document.createElement('li');
         transactionEl.append(item.name);
 
   // then appending that to transactionsel which is the ul with id transaction
         transactionsEl.appendChild(transactionEl);
+        // div create karenge button aur amount ke liee.
         containerEl = document.createElement('div');
-      // tansactionel mein containerel daal diya 
+      // tansactionel mein containerel(div) daal diya 
       transactionEl.appendChild(containerEl);
         //fir amount create kiya 
         amountEl = document.createElement('span');
@@ -118,14 +131,16 @@ var amountInputEl = document.querySelector('#amount');
         {
             amountEl.classList.add('expense-amt') ;
     }
-    // amount fetch karke usko container mein daal diya 
+    // amount fetch karke usko container(div) mein daal diya 
     amountEl.innerHTML = `Rs.${item.amount}`;
     containerEl.appendChild(amountEl);
+    // button create kiya 
     btnEl = document.createElement('button');
     btnEl.setAttribute('data-id',item.id);
+    // uska innserhtml fetch karke usko append kar diya 
     btnEl.innerHTML = 'X';
     btnEl.addEventListener('click',onDeleteClick);
-    // butotn ko container div mein add kar diya  
+    // button ko container div mein add kar diya  
     containerEl.appendChild(btnEl);
      }
  }
